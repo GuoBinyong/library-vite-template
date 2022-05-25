@@ -36,7 +36,7 @@
   ],
   "scripts": {
     "dev": "vite",
-    "build": "tsc  --emitDeclarationOnly && vite build",
+    "build": "tsc  --emitDeclarationOnly && vite build && api-extractor run -c config/api-extractor.jsonc",
     "preview": "vite preview",
     "doc":"api-documenter markdown -i ./temp"
   },
