@@ -12,7 +12,6 @@ const formats = ['es', 'umd'];  //所需构建的模块格式
 // 自动配置
 const pkgName = getBaseNameOfHumpFormat(pkg.name);  //驼峰格式的 pkg.name
 const outDir = dirname(pkg.main || "dist");    //输出目录
-// const extensions = ['.tsx', '.ts','.jsx','.mjs', '.js', '.json','.node'];  // 默认查找的文件扩展名
 
 
 
@@ -26,7 +25,6 @@ const config = {
             name:pkgName, 
             entry: entry,
             formats:formats,
-            // fileName:removeScope(pkg.name)
         },
         outDir:outDir,
         rollupOptions:{
@@ -37,20 +35,19 @@ const config = {
 
 
 export default defineConfig((options)=>{
-    console.log("---",options);
     const {mode} = options;
-    /**
-     * 必须要包含的包
-     */
-    let include = [];
+
     switch (mode) {
-        case 'stage':{
-            include =  ["@turf/turf"];
+        case "stage":{
+            config.build.rollupOptions.external = getDependencieNames(pkg,["peerDependencies"]);
+            break;
+        }
+        case "iife":{
+            config.build.lib.formats = ["iife"];
+            config.build.rollupOptions.external = getDependencieNames(pkg,["peerDependencies"]);
             break;
         }
     }
-
-    // config.build.rollupOptions.external = externalPkgs.filter((item)=> !include.includes(item) );
 
     return config;
 })
