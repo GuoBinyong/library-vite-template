@@ -10,7 +10,7 @@
     "esModuleInterop": true,
     "skipLibCheck": true,
     "useDefineForClassFields": true,
-    "declarationDir":"types/",
+    "outDir":"types/",
   },
   "include": ["src"]
 }
