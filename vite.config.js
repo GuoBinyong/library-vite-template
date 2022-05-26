@@ -2,8 +2,8 @@
 import { defineConfig } from 'vite'
 import {getDependencieNames,getBaseNameOfHumpFormat,removeScope} from "package-tls";
 import pkg from "./package.json";
-import {dirname} from "path"
-import {build} from "vite"
+import {dirname} from "path";
+import {build} from "vite";
 
 
 // 手动配置

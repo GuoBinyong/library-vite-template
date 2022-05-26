@@ -39,7 +39,7 @@
     "build": "vite build && tsc  --emitDeclarationOnly",
     "stage": "vite build --mode stage && tsc  --emitDeclarationOnly",
     "preview": "vite preview",
-    "doc":"api-extractor run -c api-extractor.jsonc; api-documenter markdown -i ./temp -o doc"
+    "doc":"api-extractor run -c api-extractor.jsonc --local -v; api-documenter markdown -i ./temp -o doc"
   },
   "devDependencies": {
     "@microsoft/api-documenter": "^7.17.15",
