@@ -10,7 +10,7 @@
     "esModuleInterop": true,
     "skipLibCheck": true,
     "useDefineForClassFields": true,
-    "outDir":"types/",
+    "outDir":"dist/",
     "noImplicitOverride":true,
   },
   "include": ["src"]

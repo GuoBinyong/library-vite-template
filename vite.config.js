@@ -43,6 +43,7 @@ export default defineConfig((options)=>{
             break;
         }
         case "iife":{
+            config.build.emptyOutDir = false;
             config.build.lib.formats = ["iife"];
             config.build.rollupOptions.external = getDependencieNames(pkg,["peerDependencies"]);
             break;
