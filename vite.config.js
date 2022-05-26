@@ -34,6 +34,9 @@ const config = {
 };
 
 
+/**
+ * 导出最终的配置
+ */
 export default defineConfig((options)=>{
     const {mode} = options;
 
