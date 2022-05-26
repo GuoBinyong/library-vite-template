@@ -36,8 +36,8 @@
   ],
   "scripts": {
     "dev": "vite",
-    "build": "vite build && vite build --mode iife && tsc  --emitDeclarationOnly",
-    "stage": "vite build --mode stage && vite build --mode iife && tsc  --emitDeclarationOnly",
+    "build": "vite build && tsc  --emitDeclarationOnly",
+    "stage": "vite build --mode stage && tsc  --emitDeclarationOnly",
     "preview": "vite preview",
     "doc":"api-extractor run -c api-extractor.jsonc; api-documenter markdown -i ./temp -o doc"
   },
