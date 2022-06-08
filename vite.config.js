@@ -4,6 +4,7 @@ import {getDependencieNames,getBaseNameOfHumpFormat,removeScope} from "package-t
 import pkg from "./package.json";
 import {dirname} from "path";
 import {build} from "vite";
+import {generate_d_ts} from "build-tls";
 
 
 // 手动配置
@@ -11,6 +12,7 @@ const entry = 'src/index.ts';   // 输入（入口）文件
 //所需构建的模块格式
 const formatsForExcludeDep = ['es', 'umd'];  //要排除依赖包的模块格式
 const formatsForIncludeDep = ['iife'];  //要包含依赖包的模块格式
+const copyDTS = true;  //是否要拷贝项目中已存在的类型声明文件.d.ts 到输出目录中
 
 
 // 自动配置
@@ -62,5 +64,8 @@ export default defineConfig((options)=>{
         }
     }
 
+    generate_d_ts(dirname(entry),outDir,{
+        copyDTS:copyDTS,
+    });
     return config;
 })

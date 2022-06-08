@@ -36,15 +36,16 @@
   ],
   "scripts": {
     "dev": "vite",
-    "build": "vite build && tsc  --emitDeclarationOnly",
-    "stage": "vite build --mode stage && tsc  --emitDeclarationOnly",
+    "build": "vite build",
+    "stage": "vite build --mode stage",
     "preview": "vite preview",
-    "api":"api-extractor run -c api-extractor.jsonc -l -v",
-    "doc":"npm run api ; api-documenter markdown -i ./temp -o doc"
+    "api": "api-extractor run -c api-extractor.jsonc -l -v",
+    "doc": "npm run api ; api-documenter markdown -i ./temp -o doc"
   },
   "devDependencies": {
     "@microsoft/api-documenter": "^7.17.15",
     "@microsoft/api-extractor": "^7.24.1",
+    "build-tls": "^1.1.1",
     "package-tls": "^1.2.2",
     "typescript": "^4.5.4",
     "vite": "^2.9.9"
