@@ -17,7 +17,10 @@ const copyDTS = true;  //是否要拷贝项目中已存在的类型声明文件.
 
 // 自动配置
 const pkgName = getBaseNameOfHumpFormat(pkg.name);  //驼峰格式的 pkg.name
-const outDir = dirname(pkg.main || "dist");    //输出目录
+const outDir = pkg.main ? dirname(pkg.main) : "dist";    //输出目录
+let declarationDir =  pkg.types || pkg.typings;  //类型声明文件的输出目录
+declarationDir = declarationDir ?  dirname(declarationDir) : outDir;
+
 
 
 
@@ -64,7 +67,7 @@ export default defineConfig((options)=>{
         }
     }
 
-    generate_d_ts(dirname(entry),outDir,{
+    generate_d_ts(dirname(entry),declarationDir,{
         copyDTS:copyDTS,
     });
     return config;
