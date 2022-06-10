@@ -50,7 +50,8 @@ const config = {
  * 导出最终的配置
  */
 export default defineConfig((options)=>{
-    const {mode} = options;
+    const {mode,command} = options;
+    if (command !== "build") return config;
 
 
     switch (mode) {
