@@ -13,7 +13,13 @@ const entry = 'src/index.ts';   // 输入（入口）文件
 //所需构建的模块格式
 const formats_ExcludeDep = ['es', 'umd'];  //要排除依赖包的模块格式
 const formats_IncludeDep = ['iife'];  //要包含依赖包的模块格式
-const copyDTS = true;  //是否要拷贝项目中已存在的类型声明文件.d.ts 到输出目录中
+/**
+ * 是否要拷贝项目中已存在的类型声明文件.d.ts 到输出目录中
+ * 可通过指定为 false 来禁止拷贝
+ */
+const copyDTS = {
+    exclude:["vite-env.d.ts"], //需要排除的文件或目录
+};
 
 
 // 自动配置
