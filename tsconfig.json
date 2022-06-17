@@ -6,7 +6,7 @@
     "declaration": true,
     "strict": true,
     "resolveJsonModule": true,
-    "moduleResolution": "NodeNext",
+    "moduleResolution": "node",
     "esModuleInterop": true,
     "skipLibCheck": true,
     "useDefineForClassFields": true,

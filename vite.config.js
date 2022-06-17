@@ -43,8 +43,10 @@ const excludedDep_Include = [...nodeBuiltinModules,...getDependencieNames(pkg,["
 const workerFileBuildOptions = {
     entrys:[],  // worker 的入口文件
     outDir:srcDir, // worker 的输出目录
+    emptyOutDir:false, // 每次执行时是否清空输出目录
     fileName:"[dir]/[name]", // 构建产物的文件名字，详见 buildFiles() 函数的 fileName 选项
     formats:["es"],  // 构建产物的模块格式
+    buildOrder:"before",  // 相对于主构建程序，是在其之前构建，还是在其之后构建，可用的值是 ： "before" 或 "前","after" 或 "后"
 };
 
 
@@ -73,11 +75,16 @@ const config = {
 /**
  * 导出最终的配置
  */
-export default defineConfig(async (options)=>{
+export default defineConfig((options)=>{
     const {mode,command} = options;
     if (command !== "build") return config;
-    if (workerFileBuildOptions.entrys.length)
-    await buildFiles(workerFileBuildOptions);
+
+    let beforePro =  buildFiles(workerFileBuildOptions);
+    const {buildOrder} = workerFileBuildOptions;
+    if ( ["after","后"].includes(buildOrder)){
+        beforePro = null;
+    }
+   
 
     switch (mode) {
         case "stage":{
@@ -92,9 +99,26 @@ export default defineConfig(async (options)=>{
                 inlineConfig.build.emptyOutDir = false; // 不清空输出目录
                 inlineConfig.build.lib.formats = formats_IncludeDep;
                 inlineConfig.build.rollupOptions.external = excludedDep_Include;
-                build(inlineConfig); //单独进行构建
+                if(beforePro){
+                    beforePro.finally(function(){
+                        build(inlineConfig); //单独进行构建
+                    })
+                }else{
+                    build(inlineConfig); //单独进行构建
+                }
             }
         }
+    }
+
+
+
+    if(beforePro){
+       return beforePro.finally(function(){
+            generate_d_ts(srcDir,declarationDir,{
+                copyDTS:copyDTS,
+            });
+            return config;
+        });
     }
 
     generate_d_ts(srcDir,declarationDir,{
@@ -112,7 +136,7 @@ export default defineConfig(async (options)=>{
 
 /**
  * 构建文件
- * @param {{entrys:string[],outDir?:string,fileName?:string,formats?:string[]}} options 
+ * @param {{entrys:string[],outDir?:string,fileName?:string,formats?:string[],emptyOutDir?:boolean}} options 
  *    entrys:string[] - 入口文件列表，每个文件都会单独构建
  *    outDir?:string  - 构建的输出目录
  *    fileName?:string - 构建产物的文件名字（可以指定路径），
@@ -123,6 +147,7 @@ export default defineConfig(async (options)=>{
  *          [extname]：文件的扩展名，.如果它不为空，则为前缀。
  *          [assetExtname]: 文件的扩展名，.如果它不为空且不是 、 或 之一，则为js前缀。jsxtstsx
  *      formats?:string[] - 构建产物的模块格式
+ *      emptyOutDir?:boolean - 是否要清空输出目录；当 outDir === srcDir 时，会强制设置为 false
  * @returns 构建完成的 Promise
  * 
  * 
@@ -131,10 +156,14 @@ function buildFiles(options){
     const {entrys,outDir,formats} = options;
     if (!entrys?.length) return;
     
-    let {fileName} = options;
+    let {fileName,emptyOutDir} = options;
     fileName = fileName || "[dir]/[name]";
+    emptyOutDir = emptyOutDir ?? false;
+    if (outDir === srcDir){
+        emptyOutDir = false;
+    }
 
-   const buildProArr = entrys.map((entryFile)=>{
+   const buildProArr = entrys.map((entryFile,index)=>{
        const  relPath = relative(srcDir,entryFile);
        const fileInfo = parse(relPath);
        const dir = fileInfo.dir;
@@ -144,7 +173,7 @@ function buildFiles(options){
        return  build({
            configFile:false,
            build:{
-               emptyOutDir:false,
+               emptyOutDir:index > 0 ? false : emptyOutDir,
                lib: {
                    name:fileInfo.name,
                    formats:formats,
