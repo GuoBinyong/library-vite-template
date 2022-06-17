@@ -127,32 +127,34 @@ export default defineConfig(async (options)=>{
  * 
  * 
  */
- function buildFiles(options){
-     const {entrys,outDir,formats} = options;
-     if (!entrys?.length) return;
-     
-     let {fileName} = options;
-     fileName = fileName || "[dir]/[name]";
-
-    const buildProArr = entrys.map((entryFile)=>{
-        const  relPath = relative(srcDir,entryFile);
-        const fileInfo = parse(relPath);
-        fileName = fileName.replaceAll("[dir]",fileInfo.dir);
-        
-        return  build({
-            configFile:false,
-            build:{
-                emptyOutDir:false,
-                lib: {
-                    name:fileInfo.name,
-                    formats:formats,
-                    entry: entryFile,
-                    fileName:fileName,
-                },
-                outDir:outDir,
-            }
-        });
-    });
+function buildFiles(options){
+    const {entrys,outDir,formats} = options;
+    if (!entrys?.length) return;
     
-    return Promise.all(buildProArr);
+    let {fileName} = options;
+    fileName = fileName || "[dir]/[name]";
+
+   const buildProArr = entrys.map((entryFile)=>{
+       const  relPath = relative(srcDir,entryFile);
+       const fileInfo = parse(relPath);
+       const dir = fileInfo.dir;
+       const dirReg = dir ? /\[\s*dir\s*\]/g  : /\[\s*dir\s*\]\s*\//g;
+       fileName = fileName.replace(dirReg,dir);
+       
+       return  build({
+           configFile:false,
+           build:{
+               emptyOutDir:false,
+               lib: {
+                   name:fileInfo.name,
+                   formats:formats,
+                   entry: entryFile,
+                   fileName:fileName,
+               },
+               outDir:outDir,
+           }
+       });
+   });
+   
+   return Promise.all(buildProArr);
 }
