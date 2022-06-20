@@ -113,7 +113,7 @@ export default defineConfig((options)=>{
 
 
     if(beforePro){
-       return beforePro.finally(function(){
+       return beforePro.finally(()=>{}).then(()=>{
             generate_d_ts(srcDir,declarationDir,{
                 copyDTS:copyDTS,
             });
