@@ -80,7 +80,7 @@ const config = {
     if (command !== "build") return config;
     
     config.build.emptyOutDir = false;  // 防止把先生成的文件（比如：类型声明文件）给清除了
-    removePath(outDir);  // 手动清除输出目录
+    await removePath(outDir);  // 手动清除输出目录
 
     if ( ["after","后"].includes(workerFileBuildOptions.buildOrder)){
         buildFiles(workerFileBuildOptions);
