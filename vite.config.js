@@ -4,7 +4,7 @@ import {getDependencieNames,getBaseNameOfHumpFormat} from "package-tls";
 import pkg from "./package.json" assert {type: "json"};
 import {dirname,relative,parse} from "node:path";
 import {build} from "vite";
-import {generate_d_ts} from "build-tls";
+import {generate_d_ts,removePath} from "build-tls";
 import {builtinModules} from "node:module"
 
 
@@ -29,7 +29,7 @@ const copyDTS = {
 // 自动配置
 const pkgName = getBaseNameOfHumpFormat(pkg.name);  //驼峰格式的 pkg.name
 const srcDir = dirname(entry);   //源代码根目录
-const outDir = pkg.main ? dirname(pkg.main) : "dist";    //输出目录
+const outDir = pkg.main ? dirname(pkg.main || pkg.module) : "dist";    //输出目录
 let declarationDir =  pkg.types || pkg.typings;  //类型声明文件的输出目录
 declarationDir = declarationDir ?  dirname(declarationDir) : outDir;
 
@@ -75,16 +75,28 @@ const config = {
 /**
  * 导出最终的配置
  */
-export default defineConfig((options)=>{
+ export default defineConfig(async (options)=>{
     const {mode,command} = options;
     if (command !== "build") return config;
+    
+    config.build.emptyOutDir = false;  // 防止把先生成的文件（比如：类型声明文件）给清除了
+    removePath(outDir);  // 手动清除输出目录
 
-    let beforePro =  buildFiles(workerFileBuildOptions);
-    const {buildOrder} = workerFileBuildOptions;
-    if ( ["after","后"].includes(buildOrder)){
-        beforePro = null;
+    if ( ["after","后"].includes(workerFileBuildOptions.buildOrder)){
+        buildFiles(workerFileBuildOptions);
+    }else{
+        await buildFiles(workerFileBuildOptions);
     }
-   
+
+    generate_d_ts(srcDir,declarationDir,{
+        onExit:false,
+        copyDTS:copyDTS,
+    });
+
+
+
+    
+    
 
     switch (mode) {
         case "stage":{
@@ -99,31 +111,11 @@ export default defineConfig((options)=>{
                 inlineConfig.build.emptyOutDir = false; // 不清空输出目录
                 inlineConfig.build.lib.formats = formats_IncludeDep;
                 inlineConfig.build.rollupOptions.external = excludedDep_Include;
-                if(beforePro){
-                    beforePro.finally(function(){
-                        build(inlineConfig); //单独进行构建
-                    })
-                }else{
-                    build(inlineConfig); //单独进行构建
-                }
+                build(inlineConfig); //单独进行构建
             }
         }
     }
 
-
-
-    if(beforePro){
-       return beforePro.finally(()=>{}).then(()=>{
-            generate_d_ts(srcDir,declarationDir,{
-                copyDTS:copyDTS,
-            });
-            return config;
-        });
-    }
-
-    generate_d_ts(srcDir,declarationDir,{
-        copyDTS:copyDTS,
-    });
     return config;
 });
 
