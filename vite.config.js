@@ -7,12 +7,12 @@ import {build} from "vite";
 import {generate_d_ts,removePath} from "build-tls";
 import {builtinModules} from "node:module"
 
-
 // 手动配置
 const entry = 'src/index.ts';   // 输入（入口）文件
 //所需构建的模块格式
 const formats_ExcludeDep = ['es', 'umd'];  //要排除依赖包的模块格式
 const formats_IncludeDep = ['iife'];  //要包含依赖包的模块格式
+const singleDts = true;   // 是否要将声明汇总成一个单独的文件
 /**
  * 是否要拷贝项目中已存在的类型声明文件.d.ts 到输出目录中
  * 可通过指定为 false 来禁止拷贝
@@ -26,16 +26,21 @@ const copyDTS = {
 
 
 
+
+
 // 自动配置
 const pkgName = getBaseNameOfHumpFormat(pkg.name);  //驼峰格式的 pkg.name
 const srcDir = dirname(entry);   //源代码根目录
 const outDir = pkg.main ? dirname(pkg.main || pkg.module) : "dist";    //输出目录
-let declarationDir =  pkg.types || pkg.typings;  //类型声明文件的输出目录
-declarationDir = declarationDir ?  dirname(declarationDir) : outDir;
+const dtsFile =  pkg.types || pkg.typings;  //类型声明文件的路径
+const dtsDir = dtsFile ?  dirname(dtsFile) : outDir;  //类型声明文件的输出目录
+
+const excludedDepTyps_Exclude = ["dependencies","optionalDependencies","peerDependencies"];  // 排除依赖包模块格式所需要排除的依赖的类型
+const excludedDepTypes_Include = ["peerDependencies"];  // 包含依赖包模块格式所需要排除的依赖的类型
 
 const nodeBuiltinModules = [/^node:/,...builtinModules];   //node 的内置模块，一般需要排除；
-const excludedDep_Exclude = [...nodeBuiltinModules,...getDependencieNames(pkg)];   // 排除依赖包模块格式所需要排除的依赖
-const excludedDep_Include = [...nodeBuiltinModules,...getDependencieNames(pkg,["peerDependencies"])];   // 包含依赖包模块格式所需要排除的依赖
+const excludedDep_Exclude = [...nodeBuiltinModules,...getDependencieNames(pkg,excludedDepTyps_Exclude)];   // 排除依赖包模块格式所需要排除的依赖
+const excludedDep_Include = [...nodeBuiltinModules,...getDependencieNames(pkg,excludedDepTypes_Include)];   // 包含依赖包模块格式所需要排除的依赖
 
 
 
@@ -88,10 +93,20 @@ const config = {
         await buildFiles(workerFileBuildOptions);
     }
 
-    generate_d_ts(srcDir,declarationDir,{
+
+    const excludedDepTypes =  mode === "stage" ? excludedDepTypes_Include : excludedDep_Exclude;
+    const allDepTyps = ["dependencies","optionalDependencies","peerDependencies"];
+    const inlinedDepTypes = allDepTyps.filter(dType=>!excludedDepTypes.includes(dType));
+    generate_d_ts(srcDir,dtsDir,{
         onExit:false,
         copyDTS:copyDTS,
+        outFile: singleDts ? dtsFile : null,
+        dtsBundle:{
+            entry:entry,
+            inlinedLibraries:getDependencieNames(pkg,inlinedDepTypes)
+        }
     });
+    
 
 
 
