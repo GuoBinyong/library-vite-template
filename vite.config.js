@@ -14,6 +14,16 @@ const formats_ExcludeDep = ['es', 'umd'];  //要排除依赖包的模块格式
 const formats_IncludeDep = ['iife'];  //要包含依赖包的模块格式
 const singleDts = false;   // 是否要将声明汇总成一个单独的文件
 /**
+ * 将声明汇总成一个文件的选项
+ * @type {import("build-tls").DtsBundle|boolean}
+ */
+ const dtsBundle = {
+    entry:entry,
+    umdModuleName:pkgName,
+    // inlineDeclareGlobal:true,
+    // inlineDeclareExternals:true,
+};
+/**
  * 是否要拷贝项目中已存在的类型声明文件.d.ts 到输出目录中
  * 可通过指定为 false 来禁止拷贝
  */
@@ -78,6 +88,7 @@ const config = {
  export default defineConfig(async (options)=>{
     const {mode,command} = options;
     if (command !== "build") return config;
+    const isBunch = mode === "bunch";
     
     config.build.emptyOutDir = false;  // 防止把先生成的文件（比如：类型声明文件）给清除了
     await removePath(outDir);  // 手动清除输出目录
@@ -88,20 +99,16 @@ const config = {
         await buildFiles(workerFileBuildOptions);
     }
 
-
-    const excludedDepTypes =  mode === "bunch" ? excludedDepTypes_Include : excludedDepTyps_Exclude;
+    const excludedDepTypes =  isBunch ? excludedDepTypes_Include : excludedDepTyps_Exclude;
     const allDepTyps = ["dependencies","optionalDependencies","peerDependencies"];
     const inlinedDepTypes = allDepTyps.filter(dType=>!excludedDepTypes.includes(dType));
     generate_d_ts(srcDir,dtsDir,{
         onExit:false,
         copyDTS:copyDTS,
-        outFile: singleDts ? dtsFile : null,
+        outFile: singleDts||isBunch ? dtsFile : null,
         dtsBundle:{
             externalInlines:[...getDependencieNames(pkg,inlinedDepTypes)],
-            entry:entry,
-            umdModuleName:pkgName,
-            inlineDeclareGlobal:true,
-            inlineDeclareExternals:true,
+            ...dtsBundle,
         }
     });
     
