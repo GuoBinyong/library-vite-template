@@ -91,7 +91,7 @@ const config = {
     }
 
 
-    const excludedDepTypes =  mode === "stage" ? excludedDepTypes_Include : excludedDepTyps_Exclude;
+    const excludedDepTypes =  mode === "bunch" ? excludedDepTypes_Include : excludedDepTyps_Exclude;
     const allDepTyps = ["dependencies","optionalDependencies","peerDependencies"];
     const inlinedDepTypes = allDepTyps.filter(dType=>!excludedDepTypes.includes(dType));
     generate_d_ts(srcDir,dtsDir,{
@@ -99,8 +99,11 @@ const config = {
         copyDTS:copyDTS,
         outFile: singleDts ? dtsFile : null,
         dtsBundle:{
+            externalInlines:[...getDependencieNames(pkg,inlinedDepTypes)],
             entry:entry,
-            externalInlines:[...getDependencieNames(pkg,inlinedDepTypes)]
+            umdModuleName:pkgName,
+            inlineDeclareGlobal:true,
+            inlineDeclareExternals:true,
         }
     });
     
@@ -111,7 +114,7 @@ const config = {
     
 
     switch (mode) {
-        case "stage":{
+        case "bunch":{
             config.build.lib.formats = [...formats_ExcludeDep,...formats_IncludeDep];
             config.build.rollupOptions.external = excludedDep_Include;
             break;
