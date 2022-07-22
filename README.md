@@ -124,7 +124,7 @@ ts/      # 针对 TypeScript 开发环境的配置模板 都放在这个分支�
 library-vite-template 项目支持如下构建命令：
 - `npm run dev` : 启动开发服务，构建项目，可用于运行测试页面；
 - `npm run build` : 以生产的方式构建项目；
-- `npm run stage` : 以测试的方式构建项目，此种构建方式会将依赖构建进包中，所以构建产物可以无依赖地使用；
+- `npm run bunch` : 以捆绑依赖构建项目，此种构建方式会将依赖构建进包中，所以构建产物可以无依赖地使用；
 - `npm run api` : 生成 API 报告；
 - `npm run doc` : 生成文档；
 
