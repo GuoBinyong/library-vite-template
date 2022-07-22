@@ -12,7 +12,14 @@ const entry = 'src/index.ts';   // 输入（入口）文件
 //所需构建的模块格式
 const formats_ExcludeDep = ['es', 'umd'];  //要排除依赖包的模块格式
 const formats_IncludeDep = ['iife'];  //要包含依赖包的模块格式
-const singleDts = true;   // 是否要将声明汇总成一个单独的文件
+const singleDts = false;   // 是否要将声明汇总成一个单独的文件
+/**
+ * 是否要拷贝项目中已存在的类型声明文件.d.ts 到输出目录中
+ * 可通过指定为 false 来禁止拷贝
+ */
+ const copyDTS = {
+    exclude:["vite-env.d.ts"], //需要排除的文件或目录
+};
 
 
 
@@ -22,15 +29,6 @@ const srcDir = dirname(entry);   //源代码根目录
 const outDir = pkg.main ? dirname(pkg.main || pkg.module) : "dist";    //输出目录
 const dtsFile =  pkg.types || pkg.typings;  //类型声明文件的路径
 const dtsDir = dtsFile ?  dirname(dtsFile) : outDir;  //类型声明文件的输出目录
-
-/**
- * 是否要拷贝项目中已存在的类型声明文件.d.ts 到输出目录中
- * 可通过指定为 false 来禁止拷贝
- */
- const copyDTS = !singleDts;
- // const copyDTS = {
- //     exclude:["vite-env.d.ts"], //需要排除的文件或目录
- // };
 
 const excludedDepTyps_Exclude = ["dependencies","optionalDependencies","peerDependencies"];  // 排除依赖包模块格式所需要排除的依赖的类型
 const excludedDepTypes_Include = ["peerDependencies"];  // 包含依赖包模块格式所需要排除的依赖的类型
