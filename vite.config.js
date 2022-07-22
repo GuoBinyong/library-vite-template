@@ -110,7 +110,7 @@ const config = {
             externalInlines:[...getDependencieNames(pkg,inlinedDepTypes)],
             ...dtsBundle,
         }
-    });
+    }).catch((err)=>{console.error(`${pkg.name}：generate_d_ts 生成.d.ts文件时出错!`)});
     
 
 
