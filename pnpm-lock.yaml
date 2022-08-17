@@ -5,7 +5,7 @@ specifiers:
   '@microsoft/api-extractor': ^7.24.1
   build-tls: ^1.3.11
   dts-bundle-generator: ^6.12.0
-  package-tls: ^1.3.0
+  package-tls: ^1.3.1
   typescript: ^4.5.4
   vite: ^2.9.9
 
@@ -14,7 +14,7 @@ devDependencies:
   '@microsoft/api-extractor': 7.28.5
   build-tls: 1.3.11_tgmt4ioxclj2dgcob72t5f4f4u
   dts-bundle-generator: 6.12.0
-  package-tls: 1.3.0
+  package-tls: 1.3.1
   typescript: 4.7.4
   vite: 2.9.14
 
@@ -543,8 +543,8 @@ packages:
     hasBin: true
     dev: true
 
-  /package-tls/1.3.0:
-    resolution: {integrity: sha512-K7vxI24/lDjqbY8u0e+88lh7/X/9EWzkoS92PkysPnp3t9O3j3UOc/rlEL7SXaW6VcOC2zt8+ZVYovV3gTKsPw==}
+  /package-tls/1.3.1:
+    resolution: {integrity: sha512-ulRUj5HEdjw+Cjcarjyvdszq9slaFD4U31ImUu1lWMeaMLFFSGC5fnyvebIv9/j0nUBBIJ0fUriuHYQCbWyvgg==}
     dependencies:
       es-expand: 2.5.0
     dev: true
