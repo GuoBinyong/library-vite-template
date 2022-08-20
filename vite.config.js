@@ -5,8 +5,9 @@ import {getDependencieNames,getBaseNameOfHumpFormat} from "package-tls";
 import pkg from "./package.json" assert {type: "json"};
 import {dirname,relative,parse} from "node:path";
 import {build} from "vite";
-import {generate_d_ts,removePath} from "build-tls";
+import {removePath} from "build-tls";
 import {builtinModules} from "node:module"
+import dts from 'vite-plugin-dts'
 
 // 手动配置
 const entry = 'src/index.ts';   // 输入（入口）文件
@@ -15,24 +16,10 @@ const binEntrys = [];   // 命令行工具的输入（入口）文件列表
 const formats_ExcludeDep = ['es', 'umd'];  //要排除依赖包的模块格式
 const formats_IncludeDep = ['iife'];  //要包含依赖包的模块格式
 const generateDts = true;  // 是否生成 TypeScript 的类型声明文件
-const singleDts = false;   // 是否要将声明汇总成一个单独的文件
 
-/**
- * 将声明汇总成一个文件的选项
- * @type {import("build-tls").DtsBundle|boolean}
- */
- const dtsBundle = {
-    entry:entry,
-    umdModuleName:pkgName,
-    // inlineDeclareGlobal:true,
-    // inlineDeclareExternals:true,
-};
-/**
- * 是否要拷贝项目中已存在的类型声明文件.d.ts 到输出目录中
- * 可通过指定为 false 来禁止拷贝
- */
- const copyDTS = {
-    exclude:["vite-env.d.ts"], //需要排除的文件或目录
+// 类型声明文件构建选项
+const dtsOpts = {
+    rollupTypes:false,   // 是否要将声明汇总成一个单独的文件
 };
 
 
@@ -49,16 +36,13 @@ const singleDts = false;   // 是否要将声明汇总成一个单独的文件
 const pkgName = getBaseNameOfHumpFormat(pkg.name);  //驼峰格式的 pkg.name
 const srcDir = dirname(entry);   //源代码根目录
 const outDir = pkg.main ? dirname(pkg.main || pkg.module) : "dist";    //输出目录
-const dtsFile =  pkg.types || pkg.typings;  //类型声明文件的路径
-const dtsDir = dtsFile ?  dirname(dtsFile) : outDir;  //类型声明文件的输出目录
-
-const excludedDepTyps_Exclude = ["dependencies","optionalDependencies","peerDependencies"];  // 排除依赖包模块格式所需要排除的依赖的类型
-const excludedDepTypes_Include = ["peerDependencies"];  // 包含依赖包模块格式所需要排除的依赖的类型
 
 const nodeBuiltinModules = [/^node:/,...builtinModules];   //node 的内置模块，一般需要排除；
-const excludedDep_Exclude = [...nodeBuiltinModules,...getDependencieNames(pkg,excludedDepTyps_Exclude)];   // 排除依赖包模块格式所需要排除的依赖
-const excludedDep_Include = [...nodeBuiltinModules,...getDependencieNames(pkg,excludedDepTypes_Include)];   // 包含依赖包模块格式所需要排除的依赖
+const excludedDep_Exclude = [...nodeBuiltinModules,...getDependencieNames(pkg)];   // 排除依赖包模块格式所需要排除的依赖
+const excludedDep_Include = [...nodeBuiltinModules,...getDependencieNames(pkg,["peerDependencies"])];   // 包含依赖包模块格式所需要排除的依赖
 
+const dts_Exclude = dts({...dtsOpts,exclude:excludedDep_Exclude});  // 排除依赖包模块格式所需要的类型声明插件实例
+const dts_Include = dts({...dtsOpts,exclude:excludedDep_Include});  // 包含依赖包模块格式所需要的类型声明插件实例
 
 
 // 需要单独构建的 Worker 文件的配置选项
@@ -102,7 +86,8 @@ const config = {
              */
             // exports:"auto", 
         }
-    }
+    },
+    plugins: getPlugins(dts_Exclude)
 };
 
 
@@ -120,8 +105,7 @@ const config = {
         config.build.sourcemap = true;
     }
     if (command !== "build") return config;
-    const isBunch = mode === "bunch";
-    
+
     config.build.emptyOutDir = false;  // 防止把先生成的文件（比如：类型声明文件）给清除了
     await removePath(outDir);  // 手动清除输出目录
 
@@ -131,24 +115,6 @@ const config = {
         await buildFiles(workerFileBuildOptions);
     }
 
-    if (generateDts){
-        const excludedDepTypes =  isBunch ? excludedDepTypes_Include : excludedDepTyps_Exclude;
-        const allDepTyps = ["dependencies","optionalDependencies","peerDependencies"];
-        const inlinedDepTypes = allDepTyps.filter(dType=>!excludedDepTypes.includes(dType));
-        generate_d_ts(srcDir,dtsDir,{
-            onExit:false,
-            copyDTS:copyDTS,
-            outFile: singleDts||isBunch ? dtsFile : null,
-            dtsBundle:{
-                externalInlines:[...getDependencieNames(pkg,inlinedDepTypes)],
-                ...dtsBundle,
-            }
-        }).catch((err)=>{console.error(`${pkg.name}：generate_d_ts 生成.d.ts文件时出错!`)});
-    }
-    
-
-
-
     
     
 
@@ -156,6 +122,7 @@ const config = {
         case "bunch":{
             config.build.lib.formats = [...formats_ExcludeDep,...formats_IncludeDep];
             config.build.rollupOptions.external = excludedDep_Include;
+            config.plugins = getPlugins(dts_Include);
             break;
         }
         default: {
@@ -165,6 +132,7 @@ const config = {
                 inlineConfig.build.emptyOutDir = false; // 不清空输出目录
                 inlineConfig.build.lib.formats = formats_IncludeDep;
                 inlineConfig.build.rollupOptions.external = excludedDep_Include;
+                inlineConfig.plugins = getPlugins(dts_Include);
                 build(inlineConfig); //单独进行构建
             }
         }
@@ -232,4 +200,15 @@ function buildFiles(options){
    });
    
    return Promise.all(buildProArr);
+}
+
+
+
+/**
+ * 获取插件
+ * @param  plug - 插件
+ * @returns 插件数组
+ */
+function getPlugins(plug){
+    return generateDts ? [plug] : [];
 }
