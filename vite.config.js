@@ -12,7 +12,7 @@ const entry = 'src/index.ts';   // 输入（入口）文件
 //所需构建的模块格式
 const formats_ExcludeDep = ['es', 'umd'];  //要排除依赖包的模块格式
 const formats_IncludeDep = ['iife'];  //要包含依赖包的模块格式
-const singleDts = false;   // 是否要将声明汇总成一个单独的文件
+const singleDts = true;   // 是否要将声明汇总成一个单独的文件
 /**
  * 将声明汇总成一个文件的选项
  * @type {import("build-tls").DtsBundle|boolean}

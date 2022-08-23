@@ -1,5 +1,5 @@
-[教程]: ./docs/教程.md
-[API接口文档]: ./doc/index.md
+[教程]: ./doc/教程.md
+[API接口文档]: ./doc/api/index.md
 
 [GitHub仓库]: https://github.com/GuoBinyong/library-vite-template
 [发行地址]: https://github.com/GuoBinyong/library-vite-template/releases

@@ -40,7 +40,7 @@
     "bunch": "vite build --mode bunch",
     "preview": "vite preview",
     "api": "api-extractor run -c api-extractor.jsonc -l -v",
-    "doc": "npm run api ; api-documenter markdown -i ./temp -o doc"
+    "doc": "npm run api ; api-documenter markdown -i ./temp -o doc/api"
   },
   "devDependencies": {
     "@microsoft/api-documenter": "^7.17.15",
