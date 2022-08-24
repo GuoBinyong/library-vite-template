@@ -73,6 +73,13 @@ const config = {
         outDir:outDir,
         rollupOptions:{
             external:excludedDep_Exclude,
+            /**
+             * String 使用什么导出模式。默认为auto，它根据entry模块导出的内容猜测你的意图：
+             * default – 如果你使用 export default ... 仅仅导出一个东西，那适合用这个
+             * named – 如果你导出多个东西，适合用这个
+             * none – 如果你不导出任何内容 (例如，你正在构建应用程序，而不是库)，则适合用这个
+             */
+            // exports:"auto", 
         }
     }
 };
