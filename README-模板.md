@@ -55,6 +55,7 @@
 
 
 ## 3.1. 方式1：通过 npm 安装
+通过 npm （或 yarn、pnpm 等包管理器）安装
 ```
 npm install library-vite-template
 ```
@@ -71,10 +72,10 @@ npm install library-vite-template
    <script src="path/to/package/library-vite-template.iife.js"></script>
    ```
    
-2. 使用全局的 `library-vite-template`
+2. 使用全局的 `LibraryViteTemplate`
    ```
    <script>
-   // 使用全局的 library-vite-template
+   // 使用全局的 LibraryViteTemplate
    </script>
    ```
 
