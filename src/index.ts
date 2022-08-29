@@ -1,3 +1,4 @@
+/// <reference types="vite/client" />
 /**
  * 库的摘要信息
  * 
