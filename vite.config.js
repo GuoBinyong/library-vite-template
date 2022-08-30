@@ -55,7 +55,7 @@ const workerFileBuildOptions = {
     outDir:srcDir, // worker 的输出目录
     emptyOutDir:false, // 每次执行时是否清空输出目录
     fileName:"[dir]/[name]", // 构建产物的文件名字，详见 buildFiles() 函数的 fileName 选项
-    formats:["es"],  // 构建产物的模块格式
+    formats:["iife"],  // 构建产物的模块格式
     buildOrder:"before",  // 相对于主构建程序，是在其之前构建，还是在其之后构建，可用的值是 ： "before" 或 "前","after" 或 "后"
 };
 
@@ -194,7 +194,7 @@ function buildFiles(options){
            build:{
                emptyOutDir:index > 0 ? false : emptyOutDir,
                lib: {
-                   name:fileInfo.name,
+                   name:getBaseNameOfHumpFormat(fileInfo.name),
                    formats:formats,
                    entry: entryFile,
                    fileName:finalFileName,
