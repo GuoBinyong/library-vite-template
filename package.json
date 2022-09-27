@@ -38,6 +38,8 @@
     "dev": "vite",
     "build": "vite build",
     "bunch": "vite build --mode bunch",
+    "debug": "debug=true vite build",
+    "debug:bunch": "debug=true vite build --mode bunch",
     "preview": "vite preview",
     "api": "api-extractor run -c api-extractor.jsonc -l -v",
     "doc": "npm run api ; api-documenter markdown -i ./temp -o doc/api"

@@ -13,7 +13,7 @@ const entry = 'src/index.ts';   // 输入（入口）文件
 const formats_ExcludeDep = ['es', 'umd'];  //要排除依赖包的模块格式
 const formats_IncludeDep = ['iife'];  //要包含依赖包的模块格式
 const singleDts = true;   // 是否要将声明汇总成一个单独的文件
-const minify = true;  // 是否最小化混淆代码
+
 /**
  * 将声明汇总成一个文件的选项
  * @type {import("build-tls").DtsBundle|boolean}
@@ -31,6 +31,14 @@ const minify = true;  // 是否最小化混淆代码
  const copyDTS = {
     exclude:["vite-env.d.ts"], //需要排除的文件或目录
 };
+
+
+/**
+ * 可通过在 ssh 环境中设置 `debug=true` 来在调试模式下构建代码；如：`debug=true npm run build`
+ * 在调试模式下：
+ * - 会开启 sourcemap
+ * - 会关闭最小化混淆代码
+ */
 
 
 
@@ -95,8 +103,9 @@ const config = {
  */
  export default defineConfig(async (options)=>{
     const {mode,command} = options;
-    if (!minify){
+    if (process.env.debug === "true"){  // 是否在调试模式下构建代码
         config.build.minify = false;
+        config.build.sourcemap = true;
     }
     if (command !== "build") return config;
     const isBunch = mode === "bunch";
