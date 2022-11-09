@@ -11,6 +11,8 @@
     "skipLibCheck": true,
     "useDefineForClassFields": true,
     "noImplicitOverride":true,
+    "declarationMap": true,
+    "isolatedModules": true
   },
   "include": ["src"]
 }
