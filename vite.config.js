@@ -12,6 +12,7 @@ const entry = 'src/index.ts';   // 输入（入口）文件
 //所需构建的模块格式
 const formats_ExcludeDep = ['es', 'umd'];  //要排除依赖包的模块格式
 const formats_IncludeDep = ['iife'];  //要包含依赖包的模块格式
+const generateDts = true;  // 是否生成 TypeScript 的类型声明文件
 const singleDts = true;   // 是否要将声明汇总成一个单独的文件
 
 /**
@@ -127,18 +128,20 @@ const config = {
         await buildFiles(workerFileBuildOptions);
     }
 
-    const excludedDepTypes =  isBunch ? excludedDepTypes_Include : excludedDepTyps_Exclude;
-    const allDepTyps = ["dependencies","optionalDependencies","peerDependencies"];
-    const inlinedDepTypes = allDepTyps.filter(dType=>!excludedDepTypes.includes(dType));
-    generate_d_ts(srcDir,dtsDir,{
-        onExit:false,
-        copyDTS:copyDTS,
-        outFile: singleDts||isBunch ? dtsFile : null,
-        dtsBundle:{
-            externalInlines:[...getDependencieNames(pkg,inlinedDepTypes)],
-            ...dtsBundle,
-        }
-    }).catch((err)=>{console.error(`${pkg.name}：generate_d_ts 生成.d.ts文件时出错!`)});
+    if (generateDts){
+        const excludedDepTypes =  isBunch ? excludedDepTypes_Include : excludedDepTyps_Exclude;
+        const allDepTyps = ["dependencies","optionalDependencies","peerDependencies"];
+        const inlinedDepTypes = allDepTyps.filter(dType=>!excludedDepTypes.includes(dType));
+        generate_d_ts(srcDir,dtsDir,{
+            onExit:false,
+            copyDTS:copyDTS,
+            outFile: singleDts||isBunch ? dtsFile : null,
+            dtsBundle:{
+                externalInlines:[...getDependencieNames(pkg,inlinedDepTypes)],
+                ...dtsBundle,
+            }
+        }).catch((err)=>{console.error(`${pkg.name}：generate_d_ts 生成.d.ts文件时出错!`)});
+    }
     
 
 
