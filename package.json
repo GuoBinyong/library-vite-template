@@ -46,7 +46,8 @@
     "debug:bunch": "debug=true vite build --mode bunch",
     "preview": "vite preview",
     "api": "api-extractor run -c api-extractor.jsonc -l -v",
-    "doc": "npm run api ; api-documenter markdown -i ./temp -o doc/api"
+    "doc": "api-documenter markdown -i ./temp -o doc/api",
+    "apidoc": "npm run api ; npm run doc"
   },
   "devDependencies": {
     "@microsoft/api-documenter": "^7.19.24",
