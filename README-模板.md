@@ -9,7 +9,11 @@
 
 
 
-> 目录
+**目录**  
+
+<!-- @import "[TOC]" {cmd="toc" depthFrom=1 depthTo=6 orderedList=false} -->
+
+<!-- code_chunk_output -->
 
 - [1. 背景](#1-背景)
 - [2. 简介](#2-简介)
@@ -19,6 +23,10 @@
 - [4. 教程](#4-教程)
 - [5. API接口文档](#5-api接口文档)
 
+<!-- /code_chunk_output -->
+
+
+---------------------
 
 
 # 1. 背景
@@ -43,7 +51,6 @@
 - 给该仓库提交 [issues][]
 - 给我 Pull requests
 - 邮箱：<guobinyong@qq.com>
-- QQ：guobinyong@qq.com
 - 微信：keyanzhe
 
 
@@ -56,7 +63,7 @@
 
 ## 3.1. 方式1：通过 npm 安装
 通过 npm （或 yarn、pnpm 等包管理器）安装
-```
+```shell
 npm install library-vite-template
 ```
 
@@ -68,12 +75,12 @@ npm install library-vite-template
 
 
 1. 引用 library-vite-template
-   ```
+   ```html
    <script src="path/to/package/library-vite-template.iife.js"></script>
    ```
    
 2. 使用全局的 `LibraryViteTemplate`
-   ```
+   ```html
    <script>
    // 使用全局的 LibraryViteTemplate
    </script>
