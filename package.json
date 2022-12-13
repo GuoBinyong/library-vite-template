@@ -9,6 +9,7 @@
     "require": "./dist/library-vite-template.umd.js"
   },
   "types": "dist/index.d.ts",
+  "type": "commonjs",
   "sideEffects": false,
   "homepage": "https://github.com/GuoBinyong/library-vite-template#readme",
   "repository": {
